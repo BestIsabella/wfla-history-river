@@ -21,7 +21,15 @@ python3 -m http.server 8080
 
 ## 在线体验
 
-部署后访问：**https://bestisabella.github.io/wfla-history-river/**
+**https://bestisabella.github.io/wfla-history-river/**
+
+### Pages 未生效时
+
+1. 打开仓库 [Settings → Pages](https://github.com/BestIsabella/wfla-history-river/settings/pages)
+2. **Build and deployment → Source** 选择 **GitHub Actions**
+3. 打开 [Actions](https://github.com/BestIsabella/wfla-history-river/actions) → 选中失败的 `Deploy GitHub Pages` → **Re-run all jobs**
+
+若仍失败，可在 Pages 设置里改选 **Deploy from a branch** → 分支 `main` → 文件夹 `/ (root)`，保存后等待 1～2 分钟。
 
 ## 技术栈
 
