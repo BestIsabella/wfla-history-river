@@ -23,13 +23,17 @@ python3 -m http.server 8080
 
 **https://bestisabella.github.io/wfla-history-river/**
 
-### Pages 未生效时
+### 首次部署（必做，只需一次）
 
-1. 打开仓库 [Settings → Pages](https://github.com/BestIsabella/wfla-history-river/settings/pages)
-2. **Build and deployment → Source** 选择 **GitHub Actions**
-3. 打开 [Actions](https://github.com/BestIsabella/wfla-history-river/actions) → 选中失败的 `Deploy GitHub Pages` → **Re-run all jobs**
+报错 `Get Pages site failed` 是因为 **GitHub Pages 还没在仓库里打开**。按下面做即可：
 
-若仍失败，可在 Pages 设置里改选 **Deploy from a branch** → 分支 `main` → 文件夹 `/ (root)`，保存后等待 1～2 分钟。
+1. 打开 [Actions](https://github.com/BestIsabella/wfla-history-river/actions)，等最新的 **Deploy GitHub Pages** 跑完（会把网站推到 `gh-pages` 分支）
+2. 打开 [Settings → Pages](https://github.com/BestIsabella/wfla-history-river/settings/pages)
+3. **Build and deployment → Source** 选 **Deploy from a branch**（不要选 GitHub Actions）
+4. **Branch** 选 **`gh-pages`**，文件夹选 **`/ (root)`**，点 **Save**
+5. 等 1～2 分钟，访问上面的网址
+
+> 若 Actions 里还没有 `gh-pages` 分支，先在 Actions 页手动 **Run workflow** 跑一次部署。
 
 ## 技术栈
 
