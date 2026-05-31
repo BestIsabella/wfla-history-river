@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>世外历史河流 · 上海市世外中学发展史</title>
+  <meta name="description" content="以河流为主轴，穿越世外中学三十年发展史——时间轴、小猫钓鱼、雷霆肘击音游">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="river-bg"></div>
+
+  <div class="app">
+    <!-- 导航 -->
+    <nav class="nav-bar" id="mainNav">
+      <div class="nav-logo" onclick="App.goHome()">🌊 世外历史河流</div>
+      <div class="nav-steps">
+        <button class="nav-step active" data-screen="home" onclick="App.showScreen('home')">主页</button>
+        <button class="nav-step" data-screen="timeline" onclick="App.showScreen('timeline')">① 时间轴</button>
+        <button class="nav-step" id="navFishing" disabled data-screen="fishing" onclick="App.showScreen('fishing')">② 雷霆钓鱼</button>
+        <button class="nav-step" id="navRhythm" disabled data-screen="rhythm" onclick="App.showScreen('rhythm')">③ 肘击音游</button>
+        <button class="nav-step" data-screen="leaderboard" onclick="App.showScreen('leaderboard')">排行榜</button>
+      </div>
+    </nav>
+
+    <!-- 主页 -->
+    <section class="screen active" id="screen-home">
+      <div class="hero">
+        <div class="hero-badge">WFLA · 1996—2026 · 三十而立</div>
+        <h1>沿<span>历史河流</span>，游向世界</h1>
+        <p class="hero-sub">
+          上海市世外中学发展史互动体验<br>
+          以河流为主轴，从时间轴出发，钓取正史秘史野史，最终以知识与反应力征服雷霆肘击
+        </p>
+
+        <div class="hero-river-visual">
+          <svg viewBox="0 0 600 120" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0,60 Q150,20 300,60 T600,60" fill="none" stroke="rgba(126,232,250,0.4)" stroke-width="3"/>
+            <path d="M0,70 Q150,90 300,70 T600,70" fill="none" stroke="rgba(232,197,71,0.3)" stroke-width="2"/>
+            <text x="50" y="45" fill="#e8c547" font-size="12" font-family="KaiTi">1996 源起</text>
+            <text x="250" y="45" fill="#7ee8fa" font-size="12" font-family="KaiTi">2017 集团</text>
+            <text x="480" y="45" fill="#e8c547" font-size="12" font-family="KaiTi">2026 新章</text>
+            <circle cx="80" cy="60" r="6" fill="#ffd700"/>
+            <circle cx="300" cy="60" r="6" fill="#c084fc"/>
+            <circle cx="520" cy="60" r="6" fill="#fb923c"/>
+          </svg>
+        </div>
+
+        <div class="phase-cards">
+          <div class="phase-card">
+            <div class="phase-num">壹</div>
+            <h3>历史时间轴</h3>
+            <p>点击河流上的关键节点，解锁正史、秘史、野史。探索满 10 个事件后，自动进入下一阶段。</p>
+          </div>
+          <div class="phase-card">
+            <div class="phase-num">贰</div>
+            <h3>小猫雷霆钓鱼</h3>
+            <p>设定年份，在河流中垂钓。点击哪里，鱼钩就放到哪里——等鱼靠近后收杆，装满 15 条入桶。</p>
+          </div>
+          <div class="phase-card">
+            <div class="phase-num">叁</div>
+            <h3>肘击音游闯关</h3>
+            <p>小虾与浮游植物助鱼成长，鲨鱼与渔网致命一击。答题增 buff 或 debuff， fish 体型达标即通关！</p>
+          </div>
+        </div>
+
+        <div class="hero-actions">
+          <button class="btn btn-primary" onclick="App.startJourney()">🚀 开始探索</button>
+          <button class="btn btn-secondary" onclick="App.showScreen('leaderboard')">🏆 雷霆掌握员榜</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 时间轴 -->
+    <section class="screen" id="screen-timeline">
+      <div class="section-header">
+        <h2>世外历史时间轴</h2>
+        <p>点击事件卡片，阅读正史 · 秘史 · 野史。已探索 <strong id="timelineCount">0</strong> / 10 个关键节点</p>
+      </div>
+
+      <div class="progress-strip">
+        <div class="progress-label">
+          <span>探索进度</span>
+          <span id="timelinePercent">0%</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" id="timelineProgress" style="width:0%"></div></div>
+      </div>
+
+      <div class="timeline-container" id="timelineContainer"></div>
+    </section>
+
+    <!-- 钓鱼 -->
+    <section class="screen" id="screen-fishing">
+      <div class="section-header">
+        <h2>小猫雷霆钓鱼</h2>
+        <p>拖动年份滑块切换河流时代，<strong>点击哪里鱼钩就放到哪里</strong>，等鱼靠近后收杆！钓满 15 条鱼进入下一阶段</p>
+      </div>
+
+      <div class="game-panel">
+        <div class="game-hud">
+          <div class="hud-stat">
+            <div class="label">鱼桶</div>
+            <div class="value"><span id="bucketCount">0</span>/15</div>
+            <div class="bucket-visual" id="bucketVisual"></div>
+          </div>
+          <div class="year-control">
+            <span style="font-size:0.85rem">年份</span>
+            <input type="range" id="yearSlider" min="1996" max="2026" value="2005" oninput="FishingGame.setYear(this.value)">
+            <div class="year-display" id="yearDisplay">2005</div>
+          </div>
+          <div class="hud-stat">
+            <div class="label">积分</div>
+            <div class="value" id="fishScore">0</div>
+          </div>
+        </div>
+
+        <div class="fish-legend">
+          <span><span class="fish-dot" style="background:#ffd700"></span> 正史鱼 · 慢速 · +10分</span>
+          <span><span class="fish-dot" style="background:#c084fc"></span> 秘史鱼 · 中速 · +20分</span>
+          <span><span class="fish-dot" style="background:#fb923c"></span> 野史鱼 · 极速 · +30分</span>
+        </div>
+
+        <canvas id="fishingCanvas" width="960" height="400"></canvas>
+
+        <div class="fishing-controls">
+          <button class="btn btn-reel" id="reelBtn" disabled onclick="FishingGame.reelIn()">🎣 收杆</button>
+          <span class="hook-status" id="hookStatus">点击河面下钩</span>
+        </div>
+        <p class="game-tip">🐱 点击目标位置放钩 → 等鱼游到钩边 → 收杆！也可按 <span class="key-badge">空格</span> 收杆</p>
+      </div>
+    </section>
+
+    <!-- 音游 -->
+    <section class="screen" id="screen-rhythm">
+      <div class="section-header">
+        <h2>世外雷霆肘击</h2>
+        <p>按 <span class="key-badge">D</span> <span class="key-badge">F</span> <span class="key-badge">J</span> <span class="key-badge">K</span> 或点击对应轨道肘击音符！</p>
+      </div>
+
+      <div class="rhythm-layout">
+        <div>
+          <canvas id="rhythmCanvas" width="680" height="420"></canvas>
+          <p class="game-tip" style="margin-top:0.75rem">
+            🦐 小虾/浮游 = 鱼变大 · 🦈 鲨鱼/🕸️ 渔网 = 扣血 · 答题影响难度
+          </p>
+        </div>
+
+        <div class="rhythm-sidebar">
+          <div class="stat-box">
+            <h4>鱼儿生命值</h4>
+            <div class="hp-bar"><div class="hp-fill" id="hpFill" style="width:100%"></div></div>
+            <p style="margin-top:0.5rem;font-size:0.85rem"><span id="hpText">100</span> / 100</p>
+          </div>
+          <div class="stat-box">
+            <h4>成长度（通关目标 ≥ 100%）</h4>
+            <div class="size-bar"><div class="size-fill" id="sizeFill" style="width:0%"></div></div>
+            <p style="margin-top:0.5rem;font-size:0.85rem"><span id="sizeText">0</span>%</p>
+          </div>
+          <div class="stat-box">
+            <h4>连击 / 得分</h4>
+            <p style="font-size:1.2rem;color:var(--gold)">连击 <span id="comboText">0</span> · 得分 <span id="rhythmScore">0</span></p>
+          </div>
+          <div class="quiz-box hidden" id="quizBox">
+            <p id="quizQuestion"></p>
+            <div class="quiz-options" id="quizOptions"></div>
+          </div>
+          <div class="controls-hint">
+            <strong>操作说明</strong><br>
+            四轨道音游，音符落至判定线时按键<br>
+            Perfect + 成长 · Miss 扣血<br>
+            每 20 秒弹出世外问答题<br>
+            答对：+小虾、减速 · 答错：+鲨鱼、加速
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 通关 -->
+    <section class="screen" id="screen-victory">
+      <div class="victory-screen">
+        <h2>🎉 通关！</h2>
+        <p>你已成为真正的<strong>世外历史雷霆掌握员</strong></p>
+        <div class="victory-score" id="finalScore">0</div>
+        <p style="margin-bottom:2rem;color:rgba(250,246,237,0.7)">培养走向世界的现代中国人 · 爱心 · 优雅 · 大气</p>
+        <div class="hero-actions">
+          <button class="btn btn-primary" onclick="App.showLeaderboardWithScore()">录入排行榜</button>
+          <button class="btn btn-secondary" onclick="App.resetAll()">重新挑战</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 排行榜 -->
+    <section class="screen" id="screen-leaderboard">
+      <div class="section-header">
+        <h2>世外历史雷霆掌握员排行榜</h2>
+        <p>本地记录 · 看看谁是真正的世外通</p>
+      </div>
+
+      <div class="leaderboard">
+        <div class="leaderboard-form">
+          <input type="text" id="playerName" placeholder="输入你的昵称" maxlength="12">
+          <button class="btn btn-primary" onclick="Leaderboard.submitScore()">提交成绩</button>
+        </div>
+        <table class="leaderboard-table">
+          <thead>
+            <tr><th>排名</th><th>掌握员</th><th>总分</th><th>日期</th></tr>
+          </thead>
+          <tbody id="leaderboardBody"></tbody>
+        </table>
+        <p style="text-align:center;margin-top:1.5rem">
+          <button class="btn btn-secondary" onclick="App.goHome()">返回主页</button>
+        </p>
+      </div>
+    </section>
+  </div>
+
+  <!-- 钓鱼历史弹窗 -->
+  <div class="modal-overlay" id="catchHistoryModal">
+    <div class="modal catch-modal" id="catchModalBox">
+      <div class="modal-header">
+        <h3 id="catchModalTitle">钓获历史</h3>
+        <button class="modal-close" onclick="FishHistory.close()">&times;</button>
+      </div>
+      <div class="catch-modal-badge" id="catchModalBadge">📜 正史</div>
+      <div class="catch-modal-event" id="catchModalEvent"></div>
+      <div class="modal-body" id="catchModalBody"></div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" onclick="FishHistory.close()">继续钓鱼</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 事件弹窗 -->
+  <div class="modal-overlay" id="eventModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="modalTitle">事件标题</h3>
+        <button class="modal-close" onclick="Timeline.closeModal()">&times;</button>
+      </div>
+      <div class="modal-tabs">
+        <button class="modal-tab active-official" data-tab="official" onclick="Timeline.switchTab('official')">📜 正史</button>
+        <button class="modal-tab" data-tab="secret" onclick="Timeline.switchTab('secret')">🔮 秘史</button>
+        <button class="modal-tab" data-tab="rumor" onclick="Timeline.switchTab('rumor')">🎭 野史</button>
+      </div>
+      <div class="modal-body" id="modalBody"></div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" onclick="Timeline.closeModal()">继续探索</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/timeline.js"></script>
+  <script src="js/fish-history.js"></script>
+  <script src="js/fishing.js"></script>
+  <script src="js/rhythm.js"></script>
+  <script src="js/leaderboard.js"></script>
+</body>
+</html>
