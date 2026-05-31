@@ -21,6 +21,14 @@ const RhythmGame = {
   spawnTimer: 0,
   speed: 1.65,
   baseSpeed: 1.65,
+  speedTierIndex: 1,
+  speedPresets: [
+    { id: 'easy', label: '悠闲', base: 1.05, min: 0.85, max: 1.45 },
+    { id: 'normal', label: '标准', base: 1.65, min: 1.15, max: 2.35 },
+    { id: 'hard', label: '挑战', base: 2.15, min: 1.55, max: 2.85 },
+    { id: 'extreme', label: '雷霆', base: 2.75, min: 2.05, max: 3.35 },
+  ],
+  _speedTiersBound: false,
 
   hp: 100,
   maxHp: 100,
@@ -90,9 +98,68 @@ const RhythmGame = {
     this.fishCtx.imageSmoothingEnabled = true;
   },
 
+  loadSpeedTier() {
+    try {
+      const saved = localStorage.getItem('wfla_rhythm_speed_tier');
+      if (saved != null) {
+        const i = parseInt(saved, 10);
+        if (i >= 0 && i < this.speedPresets.length) this.speedTierIndex = i;
+      }
+    } catch (_) { /* ignore */ }
+    const p = this.speedPresets[this.speedTierIndex];
+    this.baseSpeed = p.base;
+    this.speed = p.base;
+    this.updateSpeedTierUI();
+  },
+
+  applySpeedTier(resetSpeed = true) {
+    const p = this.speedPresets[this.speedTierIndex];
+    this.baseSpeed = p.base;
+    if (resetSpeed) this.speed = p.base;
+    else this.speed = Math.min(p.max, Math.max(p.min, this.speed));
+    try {
+      localStorage.setItem('wfla_rhythm_speed_tier', String(this.speedTierIndex));
+    } catch (_) { /* ignore */ }
+    this.updateSpeedTierUI();
+  },
+
+  setSpeedTier(index) {
+    if (index < 0 || index >= this.speedPresets.length) return;
+    if (index === this.speedTierIndex) return;
+    this.speedTierIndex = index;
+    this.applySpeedTier(true);
+    if (this.running) {
+      App.toast(`已切换为「${this.speedPresets[index].label}」档`);
+    }
+  },
+
+  bindSpeedTiers() {
+    if (this._speedTiersBound) return;
+    const group = document.getElementById('rhythmSpeedTiers');
+    if (!group) return;
+    group.addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-speed-tier]');
+      if (!btn) return;
+      this.setSpeedTier(parseInt(btn.dataset.speedTier, 10));
+    });
+    this._speedTiersBound = true;
+  },
+
+  updateSpeedTierUI() {
+    const p = this.speedPresets[this.speedTierIndex];
+    document.querySelectorAll('.speed-tier-btn').forEach((btn) => {
+      const i = parseInt(btn.dataset.speedTier, 10);
+      btn.classList.toggle('active', i === this.speedTierIndex);
+    });
+    const label = document.getElementById('rhythmSpeedLabel');
+    if (label) label.textContent = p.label;
+  },
+
   start() {
     this.canvas = document.getElementById('rhythmCanvas');
     this.resizeCanvas();
+    this.bindSpeedTiers();
+    this.loadSpeedTier();
 
     this.running = true;
     this.notes = [];
@@ -253,14 +320,15 @@ const RhythmGame = {
 
   answerQuiz(correct) {
     this.hideQuiz();
+    const tier = this.speedPresets[this.speedTierIndex];
     if (correct) {
       this.growth += 8;
-      this.speed = Math.max(1.2, this.speed - 0.25);
+      this.speed = Math.max(tier.min, this.speed - 0.25);
       this.spawnRandomBuffs(3);
       App.toast('✅ 答对了！小虾涌现，速度减缓');
     } else {
       this.hp -= 6;
-      this.speed = Math.min(2.8, this.speed + 0.35);
+      this.speed = Math.min(tier.max, this.speed + 0.35);
       this.spawnRandomHazards(2);
       App.toast('❌ 答错了！鲨鱼来袭，速度加快');
     }
@@ -733,7 +801,8 @@ const RhythmGame = {
     ctx.font = '14px PingFang SC, sans-serif';
     ctx.textAlign = 'left';
     ctx.textBaseline = 'alphabetic';
-    ctx.fillText(`速度 ${this.speed.toFixed(1)}x`, 16, 28);
+    const tierLabel = this.speedPresets[this.speedTierIndex].label;
+    ctx.fillText(`${tierLabel} · ${this.speed.toFixed(1)}x`, 16, 28);
     ctx.textAlign = 'center';
     ctx.fillText('↓ 落至金线时按键', w / 2, 28);
   },

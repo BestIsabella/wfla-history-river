@@ -141,14 +141,7 @@
       </div>
 
       <div class="rhythm-layout">
-        <div class="rhythm-main">
-          <canvas id="rhythmCanvas"></canvas>
-          <p class="game-tip" style="margin-top:0.75rem">
-            🦐 小虾/浮游 = 鱼变大 · 🦈 鲨鱼/🕸️ 渔网 = 扣血 · 点击对应轨道或按 D F J K
-          </p>
-        </div>
-
-        <div class="rhythm-sidebar">
+        <aside class="rhythm-sidebar" aria-label="音游状态与设置">
           <div class="fish-pond-panel">
             <h4>雷霆主角鱼</h4>
             <div class="fish-pond-stage">
@@ -156,15 +149,27 @@
             </div>
             <p class="fish-pond-caption">成长 <span id="fishPondGrowth">0</span>% · 达标即通关</p>
           </div>
-          <div class="stat-box">
-            <h4>鱼儿生命值</h4>
-            <div class="hp-bar"><div class="hp-fill" id="hpFill" style="width:100%"></div></div>
-            <p style="margin-top:0.5rem;font-size:0.85rem"><span id="hpText">100</span> / 100</p>
+          <div class="rhythm-stats-row">
+            <div class="stat-box">
+              <h4>生命值</h4>
+              <div class="hp-bar"><div class="hp-fill" id="hpFill" style="width:100%"></div></div>
+              <p class="stat-num"><span id="hpText">100</span>/100</p>
+            </div>
+            <div class="stat-box">
+              <h4>成长度</h4>
+              <div class="size-bar"><div class="size-fill" id="sizeFill" style="width:0%"></div></div>
+              <p class="stat-num"><span id="sizeText">0</span>%</p>
+            </div>
           </div>
           <div class="stat-box">
-            <h4>成长度（通关目标 ≥ 100%）</h4>
-            <div class="size-bar"><div class="size-fill" id="sizeFill" style="width:0%"></div></div>
-            <p style="margin-top:0.5rem;font-size:0.85rem"><span id="sizeText">0</span>%</p>
+            <h4>下落速度档位</h4>
+            <div class="speed-tier-group" id="rhythmSpeedTiers" role="group" aria-label="下落速度档位">
+              <button type="button" class="speed-tier-btn" data-speed-tier="0">悠闲</button>
+              <button type="button" class="speed-tier-btn active" data-speed-tier="1">标准</button>
+              <button type="button" class="speed-tier-btn" data-speed-tier="2">挑战</button>
+              <button type="button" class="speed-tier-btn" data-speed-tier="3">雷霆</button>
+            </div>
+            <p class="speed-tier-hint">当前：<span id="rhythmSpeedLabel">标准</span> · 可随时切换，答题仍会临时加减速</p>
           </div>
           <div class="stat-box">
             <h4>连击 / 得分</h4>
@@ -178,9 +183,17 @@
             <strong>操作说明</strong><br>
             四轨道音游，音符落至判定线时按键<br>
             Perfect + 成长 · Miss 扣血<br>
+            左侧可选悠闲 / 标准 / 挑战 / 雷霆四档速度<br>
             约每 35 秒弹出世外问答题<br>
             答对：+小虾、减速 · 答错：+鲨鱼、加速
           </div>
+        </aside>
+
+        <div class="rhythm-main">
+          <canvas id="rhythmCanvas"></canvas>
+          <p class="game-tip rhythm-game-tip">
+            🦐 小虾/浮游 = 鱼变大 · 🦈 鲨鱼/🕸️ 渔网 = 扣血 · 点击对应轨道或按 D F J K
+          </p>
         </div>
       </div>
     </section>

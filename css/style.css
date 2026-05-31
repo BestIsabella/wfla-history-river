@@ -737,23 +737,80 @@ body {
 .bucket-slot.filled-secret { background: var(--secret); }
 .bucket-slot.filled-rumor { background: var(--rumor); }
 
-/* 音游 */
+/* 音游：左侧状态卡片 + 右侧主画布 */
 .rhythm-layout {
-  max-width: 1200px;
+  max-width: 1280px;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: 1fr 280px;
-  gap: 1.5rem;
+  grid-template-columns: minmax(260px, 300px) minmax(0, 1fr);
+  gap: 1.25rem 1.75rem;
   align-items: start;
 }
 
 .rhythm-main {
   width: 100%;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-@media (max-width: 768px) {
-  .rhythm-layout { grid-template-columns: 1fr; }
+.rhythm-game-tip {
+  margin-top: 0.75rem;
+  width: 100%;
+  max-width: 1000px;
+  text-align: center;
+}
+
+.rhythm-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  max-height: calc(100vh - 10rem);
+  overflow-y: auto;
+  padding-right: 0.25rem;
+}
+
+.rhythm-sidebar .stat-box,
+.rhythm-sidebar .fish-pond-panel,
+.rhythm-sidebar .quiz-box,
+.rhythm-sidebar .controls-hint {
+  flex-shrink: 0;
+}
+
+.rhythm-stats-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.65rem;
+}
+
+.rhythm-stats-row .stat-box {
+  padding: 0.75rem;
+}
+
+.rhythm-stats-row .stat-box h4 {
+  font-size: 0.72rem;
+  margin-bottom: 0.4rem;
+}
+
+.stat-num {
+  margin-top: 0.4rem;
+  font-size: 0.8rem;
+  color: rgba(250, 246, 237, 0.75);
+}
+
+@media (max-width: 900px) {
+  .rhythm-layout {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .rhythm-main { order: 1; }
+  .rhythm-sidebar {
+    order: 2;
+    max-height: none;
+    overflow: visible;
+  }
 }
 
 #rhythmCanvas {
@@ -764,12 +821,6 @@ body {
   background: #062530;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
   /* 尺寸由 JS 按像素设置，勿用 width:100% 拉伸，否则会糊 */
-}
-
-.rhythm-sidebar {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
 }
 
 .fish-pond-panel {
@@ -818,6 +869,43 @@ body {
   font-size: 0.8rem;
   color: rgba(250,246,237,0.6);
   margin-bottom: 0.5rem;
+}
+
+.speed-tier-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.45rem;
+}
+
+.speed-tier-btn {
+  padding: 0.45rem 0.35rem;
+  font-size: 0.78rem;
+  color: rgba(250, 246, 237, 0.85);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s, color 0.2s;
+}
+
+.speed-tier-btn:hover {
+  border-color: rgba(232, 197, 71, 0.45);
+  background: rgba(232, 197, 71, 0.08);
+}
+
+.speed-tier-btn.active {
+  color: #1a2832;
+  font-weight: 600;
+  background: linear-gradient(135deg, var(--gold), #f5e6a3);
+  border-color: var(--gold);
+  box-shadow: 0 0 12px rgba(232, 197, 71, 0.25);
+}
+
+.speed-tier-hint {
+  margin-top: 0.55rem;
+  font-size: 0.72rem;
+  line-height: 1.45;
+  color: rgba(250, 246, 237, 0.5);
 }
 
 .hp-bar, .size-bar {
