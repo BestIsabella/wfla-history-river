@@ -15,7 +15,81 @@ const App = {
     this.loadProgress();
     Timeline.init();
     Leaderboard.render();
+    this.bindPhaseCards();
     this.updateNav();
+    this.updatePhaseCards();
+  },
+
+  bindPhaseCards() {
+    const container = document.getElementById('phaseCards');
+    if (!container || container.dataset.bound) return;
+    container.dataset.bound = '1';
+
+    container.addEventListener('click', (e) => {
+      const card = e.target.closest('.phase-card');
+      if (!card || !container.contains(card)) return;
+      const phase = card.dataset.phase;
+      if (phase) this.openPhaseCard(phase);
+    });
+
+    container.addEventListener('keydown', (e) => {
+      if (e.key !== 'Enter' && e.key !== ' ') return;
+      const card = e.target.closest('.phase-card');
+      if (!card || !container.contains(card)) return;
+      e.preventDefault();
+      const phase = card.dataset.phase;
+      if (phase) this.openPhaseCard(phase);
+    });
+  },
+
+  openPhaseCard(phase) {
+    if (phase === 'timeline') {
+      this.showScreen('timeline');
+      return;
+    }
+    if (phase === 'fishing') {
+      if (!this.state.fishingUnlocked) {
+        const need = Math.max(0, 10 - this.state.timelineOpened.size);
+        this.toast(need > 0
+          ? `🔒 请先探索时间轴，还需 ${need} 个事件`
+          : '🔒 请先探索至少 10 个时间轴事件');
+        return;
+      }
+      this.showScreen('fishing');
+      return;
+    }
+    if (phase === 'rhythm') {
+      if (!this.state.rhythmUnlocked) {
+        this.toast(this.state.fishingUnlocked
+          ? '🔒 请先钓满 15 条鱼'
+          : '🔒 请先完成时间轴与钓鱼阶段');
+        return;
+      }
+      this.showScreen('rhythm');
+    }
+  },
+
+  updatePhaseCards() {
+    const fishing = document.getElementById('phaseFishing');
+    const rhythm = document.getElementById('phaseRhythm');
+    const fishingHint = document.getElementById('phaseFishingHint');
+
+    if (fishing) {
+      fishing.classList.toggle('locked', !this.state.fishingUnlocked);
+      fishing.classList.toggle('unlocked', this.state.fishingUnlocked);
+      fishing.classList.toggle('done', this.state.fishingUnlocked);
+    }
+    if (rhythm) {
+      rhythm.classList.toggle('locked', !this.state.rhythmUnlocked);
+      rhythm.classList.toggle('unlocked', this.state.rhythmUnlocked);
+      rhythm.classList.toggle('done', this.state.rhythmUnlocked);
+    }
+    if (fishingHint && !this.state.fishingUnlocked) {
+      const need = Math.max(0, 10 - this.state.timelineOpened.size);
+      fishingHint.textContent = need > 0
+        ? `🔒 还需探索 ${need} 个时间轴事件`
+        : '🔒 探索满 10 个时间轴事件后解锁';
+    }
   },
 
   loadProgress() {
@@ -71,6 +145,7 @@ const App = {
 
   goHome() {
     this.showScreen('home');
+    this.updatePhaseCards();
   },
 
   startJourney() {
@@ -140,6 +215,7 @@ const App = {
     navRhythm.disabled = !this.state.rhythmUnlocked;
     if (this.state.fishingUnlocked) navFishing.classList.add('done');
     if (this.state.rhythmUnlocked) navRhythm.classList.add('done');
+    this.updatePhaseCards();
   },
 
   toast(msg) {
@@ -152,3 +228,4 @@ const App = {
 };
 
 document.addEventListener('DOMContentLoaded', () => App.init());
+window.App = App;

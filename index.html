@@ -46,21 +46,24 @@
           </svg>
         </div>
 
-        <div class="phase-cards">
-          <div class="phase-card">
+        <div class="phase-cards" id="phaseCards">
+          <div class="phase-card unlocked" id="phaseTimeline" data-phase="timeline" role="button" tabindex="0">
             <div class="phase-num">壹</div>
             <h3>历史时间轴</h3>
             <p>点击河流上的关键节点，解锁正史、秘史、野史。探索满 10 个事件后，自动进入下一阶段。</p>
+            <span class="phase-enter-hint">点击进入 →</span>
           </div>
-          <div class="phase-card">
+          <div class="phase-card locked" id="phaseFishing" data-phase="fishing" role="button" tabindex="0">
             <div class="phase-num">贰</div>
             <h3>小猫雷霆钓鱼</h3>
             <p>设定年份，在河流中垂钓。点击哪里，鱼钩就放到哪里——等鱼靠近后收杆，装满 15 条入桶。</p>
+            <p class="phase-lock-hint" id="phaseFishingHint">🔒 探索满 10 个时间轴事件后解锁</p>
           </div>
-          <div class="phase-card">
+          <div class="phase-card locked" id="phaseRhythm" data-phase="rhythm" role="button" tabindex="0">
             <div class="phase-num">叁</div>
             <h3>肘击音游闯关</h3>
             <p>小虾与浮游植物助鱼成长，鲨鱼与渔网致命一击。答题增 buff 或 debuff， fish 体型达标即通关！</p>
+            <p class="phase-lock-hint" id="phaseRhythmHint">🔒 钓满 15 条鱼后解锁</p>
           </div>
         </div>
 
@@ -138,14 +141,21 @@
       </div>
 
       <div class="rhythm-layout">
-        <div>
-          <canvas id="rhythmCanvas" width="680" height="420"></canvas>
+        <div class="rhythm-main">
+          <canvas id="rhythmCanvas"></canvas>
           <p class="game-tip" style="margin-top:0.75rem">
-            🦐 小虾/浮游 = 鱼变大 · 🦈 鲨鱼/🕸️ 渔网 = 扣血 · 答题影响难度
+            🦐 小虾/浮游 = 鱼变大 · 🦈 鲨鱼/🕸️ 渔网 = 扣血 · 点击对应轨道或按 D F J K
           </p>
         </div>
 
         <div class="rhythm-sidebar">
+          <div class="fish-pond-panel">
+            <h4>雷霆主角鱼</h4>
+            <div class="fish-pond-stage">
+              <canvas id="rhythmFishCanvas" aria-label="主角鱼成长展示"></canvas>
+            </div>
+            <p class="fish-pond-caption">成长 <span id="fishPondGrowth">0</span>% · 达标即通关</p>
+          </div>
           <div class="stat-box">
             <h4>鱼儿生命值</h4>
             <div class="hp-bar"><div class="hp-fill" id="hpFill" style="width:100%"></div></div>
@@ -168,7 +178,7 @@
             <strong>操作说明</strong><br>
             四轨道音游，音符落至判定线时按键<br>
             Perfect + 成长 · Miss 扣血<br>
-            每 20 秒弹出世外问答题<br>
+            约每 35 秒弹出世外问答题<br>
             答对：+小虾、减速 · 答错：+鲨鱼、加速
           </div>
         </div>

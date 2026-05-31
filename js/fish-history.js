@@ -33,6 +33,11 @@ const FishHistory = {
   },
 };
 
-document.getElementById('catchHistoryModal').addEventListener('click', (e) => {
-  if (e.target.id === 'catchHistoryModal') FishHistory.close();
+document.addEventListener('DOMContentLoaded', () => {
+  const modal = document.getElementById('catchHistoryModal');
+  if (modal) {
+    modal.addEventListener('click', (e) => {
+      if (e.target.id === 'catchHistoryModal') FishHistory.close();
+    });
+  }
 });

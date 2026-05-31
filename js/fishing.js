@@ -164,6 +164,8 @@ const FishingGame = {
     const dir = Math.random() > 0.5 ? 1 : -1;
     const y = 180 + Math.random() * 180;
     const eraMod = 1 + (this.year - 1996) / 60;
+    const history = WFLA_DATA.pickFishForSpawn(this.year, type.type);
+    const tagLen = (history.fishTag || '').length;
 
     this.fishes.push({
       x: dir > 0 ? -40 : this.canvas.width + 40,
@@ -174,7 +176,11 @@ const FishingGame = {
       speed: type.speed * eraMod * (0.8 + Math.random() * 0.4),
       color: type.color,
       points: type.points,
-      w: 36 + Math.random() * 12,
+      w: Math.max(52, 44 + tagLen * 5),
+      eventId: history.eventId,
+      fishTag: history.fishTag,
+      eventTitle: history.eventTitle,
+      eventYear: history.eventYear,
     });
   },
 
@@ -223,7 +229,7 @@ const FishingGame = {
   },
 
   showCatchHistory(fish) {
-    const data = WFLA_DATA.getHistoryForFish(fish.type, this.year, this.historyUsedKeys);
+    const data = WFLA_DATA.getHistoryForFish(fish.type, this.year, this.historyUsedKeys, fish.eventId);
     this.historyUsedKeys.push(data.key);
     this.historyPaused = true;
     FishHistory.show(data, () => {
@@ -236,7 +242,8 @@ const FishingGame = {
     this.bucket.push(fish);
     this.score += fish.points;
     this.updateHUD();
-    App.toast(`🐟 钓到${fish.name}！+${fish.points}分`);
+    const tagHint = fish.fishTag ? `【${fish.fishTag}·${fish.eventYear}】` : '';
+    App.toast(`🐟 钓到${fish.name}${tagHint} +${fish.points}分`);
 
     this.liftFish = {
       ...fish,
@@ -307,29 +314,65 @@ const FishingGame = {
       flip = fish.dir > 0 ? 1 : -1,
     } = opts;
 
+    const hw = fish.w / 2;
+    const hh = 14;
+    const tag = fish.fishTag || '校史';
+    const swimFlip = rotation ? 1 : flip;
+
+    // —— 鱼身（可镜像，仅图形）——
     ctx.save();
     ctx.globalAlpha = alpha;
     ctx.translate(x, y);
     ctx.rotate(rotation);
-    ctx.scale(flip * scale, scale);
+    ctx.scale(swimFlip * scale, scale);
+
+    const bodyGrad = ctx.createLinearGradient(-hw, 0, hw, 0);
+    bodyGrad.addColorStop(0, fish.color);
+    bodyGrad.addColorStop(0.5, '#ffffff');
+    bodyGrad.addColorStop(1, fish.color);
+    ctx.fillStyle = bodyGrad;
+    ctx.strokeStyle = 'rgba(26, 40, 50, 0.55)';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.ellipse(0, 0, hw, hh, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+
     ctx.fillStyle = fish.color;
     ctx.beginPath();
-    ctx.ellipse(0, 0, fish.w / 2, 10, 0, 0, Math.PI * 2);
+    ctx.moveTo(-hw - 4, 0);
+    ctx.lineTo(-hw - 16, -10);
+    ctx.lineTo(-hw - 16, 10);
+    ctx.closePath();
     ctx.fill();
-    ctx.beginPath();
-    ctx.moveTo(-fish.w / 2 - 5, 0);
-    ctx.lineTo(-fish.w / 2 - 15, -8);
-    ctx.lineTo(-fish.w / 2 - 15, 8);
-    ctx.fill();
+    ctx.stroke();
+
+    const eyeX = hw * 0.35;
     ctx.fillStyle = '#fff';
     ctx.beginPath();
-    ctx.arc(fish.w / 4, -3, 3, 0, Math.PI * 2);
+    ctx.arc(eyeX, -4, 3.5, 0, Math.PI * 2);
     ctx.fill();
-    ctx.fillStyle = '#000';
+    ctx.fillStyle = '#1a2832';
     ctx.beginPath();
-    ctx.arc(fish.w / 4 + 1, -3, 1.5, 0, Math.PI * 2);
+    ctx.arc(eyeX + 1, -4, 1.8, 0, Math.PI * 2);
     ctx.fill();
     ctx.restore();
+
+    // 头顶悬浮提示（世界坐标，不随鱼翻转）
+    if (!rotation && alpha > 0.9 && fish.fishTag) {
+      ctx.save();
+      ctx.globalAlpha = 0.9;
+      ctx.font = '10px PingFang SC, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      const hint = fish.eventTitle ? `${fish.eventYear}·${fish.eventTitle}` : tag;
+      const hintW = ctx.measureText(hint).width + 12;
+      ctx.fillStyle = 'rgba(10, 61, 76, 0.65)';
+      ctx.fillRect(x - hintW / 2, y - hh - 24, hintW, 16);
+      ctx.fillStyle = 'rgba(250, 246, 237, 0.98)';
+      ctx.fillText(hint, x, y - hh - 16);
+      ctx.restore();
+    }
   },
 
   update() {
